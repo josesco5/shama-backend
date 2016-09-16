@@ -8,7 +8,12 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+var mongoose = require('mongoose');
+
 var app = express();
+
+// connect to database
+mongoose.connect('mongodb://localhost/shama');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
