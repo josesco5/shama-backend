@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
+var Chat = require('../models/chat');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -72,6 +73,17 @@ router.delete('/:id', function(req, res, next) {
       res.send(err);
     }
     res.send('user deleted');
+  });
+});
+
+/* GET user detail */
+router.get('/:id/chats', function(req, res, next) {
+  var id = req.params.id;
+  Chat.find({ assignedTo: id }, function(err, chats) {
+    if (err) {
+      res.send(err);
+    }
+    res.json(chats);
   });
 });
 
