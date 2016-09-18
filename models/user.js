@@ -13,7 +13,8 @@ var userSchema = mongoose.Schema({
   career: String,
   role: String,
   enabled: Boolean,
-  comments: String
+  comments: String,
+  createdAt: { type: Date, default: Date.now }
 });
 
 var User = mongoose.model('User', userSchema);
