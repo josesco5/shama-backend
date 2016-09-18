@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Chat = require('../models/chat');
 var Message = require('../models/message');
+var Comment = require('../models/comment');
 
 /* GET chats listing. */
 router.get('/', function(req, res, next) {
@@ -78,6 +79,17 @@ router.get('/:id/messages', function(req, res, next) {
       res.send(err);
     }
     res.json(messages);
+  });
+});
+
+/* GET chat's comments */
+router.get('/:id/comments', function(req, res, next) {
+  var id = req.params.id;
+  Comment.find({ chatId: id }, function(err, comments) {
+    if (err) {
+      res.send(err);
+    }
+    res.json(comments);
   });
 });
 
