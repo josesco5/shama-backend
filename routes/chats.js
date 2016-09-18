@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Chat = require('../models/chat');
+var Message = require('../models/message');
 
 /* GET chats listing. */
 router.get('/', function(req, res, next) {
@@ -66,6 +67,17 @@ router.delete('/:id', function(req, res, next) {
       res.send(err);
     }
     res.send('chat deleted');
+  });
+});
+
+/* GET chat's messages */
+router.get('/:id/messages', function(req, res, next) {
+  var id = req.params.id;
+  Message.find({ chatId: id }, function(err, messages) {
+    if (err) {
+      res.send(err);
+    }
+    res.json(messages);
   });
 });
 
