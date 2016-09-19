@@ -51,6 +51,7 @@ router.put('/:id', function(req, res, next) {
     chat.title = newValues.title;
     chat.theme = newValues.theme;
     chat.assignedTo = newValues.assignedTo;
+    chat.questions = newValues.questions;
     chat.enabled = newValues.enabled;
     chat.save(function (err, chat) {
       if (err) {
@@ -90,6 +91,38 @@ router.get('/:id/comments', function(req, res, next) {
       res.send(err);
     }
     res.json(comments);
+  });
+});
+
+/*** Surveys ***/
+
+/*
+ * POST make a vote on a survey
+ * Notes:
+ *   It suposes that there is one question in the survey
+ */
+router.post('/:id/vote/:optionId', function(req, res, next) {
+  var id = req.params.id;
+  var selectedOptionId = req.params.optionId;
+  var newValues = req.body;
+  Chat.findById(id, function (err, chat) {
+    if (err) {
+      res.send(err);
+    }
+    var options = chat.questions[0].options;
+    for (var i = 0; i < options.length; i++) {
+      var option = options[i];
+      if (option._id == selectedOptionId) {
+        option.votes++;
+        break;
+      }
+    }
+    chat.save(function (err, chat) {
+      if (err) {
+        res.send(err);
+      }
+      res.json(chat);
+    });
   });
 });
 

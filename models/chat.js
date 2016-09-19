@@ -9,6 +9,14 @@ var chatSchema = mongoose.Schema({
   type: String,
   status: String,
   enabled: Boolean,
+  questions: [
+    {
+      title: String,
+      options: [
+        { title: String, votes: { type: Number, default: 0 }}
+      ]
+    }
+  ],
   createdAt: { type: Date, default: Date.now }
 });
 
