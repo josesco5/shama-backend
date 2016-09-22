@@ -7,7 +7,7 @@ var Chat = require('../models/chat');
 router.get('/', function(req, res, next) {
   User.find(function(err, users) {
     if (err) {
-      res.send(err);
+      next(err);
     }
     res.json(users);
   });
@@ -18,7 +18,8 @@ router.get('/:id', function(req, res, next) {
   var id = req.params.id;
   User.findById(id, function (err, user) {
     if (err) {
-      res.send(err);
+      err.status = 404;
+      next(err);
     }
     res.json(user);
   });
@@ -28,7 +29,8 @@ router.get('/:id', function(req, res, next) {
 router.post('/', function(req, res, next) {
   User.create(req.body, function(err, user) {
     if (err) {
-      res.send(err);
+      err.status = 400;
+      next(err);
     }
     res.json(user);
   });
@@ -45,7 +47,9 @@ router.put('/:id', function(req, res, next) {
   var newValues = req.body;
   User.findById(id, function (err, user) {
     if (err) {
-      res.send(err);
+      err.status = 404;
+      next(err);
+      return;
     }
     user.name = newValues.name;
     user.lastname = newValues.lastname;
@@ -59,7 +63,8 @@ router.put('/:id', function(req, res, next) {
     user.comments = newValues.comments;
     user.save(function (err, user) {
       if (err) {
-        res.send(err);
+        err.status = 400;
+        next(err);
       }
       res.json(user);
     });
@@ -70,7 +75,8 @@ router.put('/:id', function(req, res, next) {
 router.delete('/:id', function(req, res, next) {
   User.remove({ _id: req.params.id }, function (err) {
     if (err) {
-      res.send(err);
+      next(err);
+      return;
     }
     res.send('user deleted');
   });
@@ -81,7 +87,9 @@ router.get('/:id/chats', function(req, res, next) {
   var id = req.params.id;
   Chat.find({ assignedTo: id }, function(err, chats) {
     if (err) {
-      res.send(err);
+      err.status = 404;
+      next(err);
+      return;
     }
     res.json(chats);
   });
