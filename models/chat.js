@@ -3,10 +3,10 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
 var chatSchema = mongoose.Schema({
-  title: String,
+  title: { type: String, required: true },
   assignedTo: { type: ObjectId, ref: 'User' },
   theme: String,
-  type: String,
+  type: { type: String, required: true },
   status: String,
   enabled: Boolean,
   questions: [
