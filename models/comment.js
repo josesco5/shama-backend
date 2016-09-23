@@ -5,8 +5,8 @@ var ObjectId = Schema.Types.ObjectId;
 var commentSchema = mongoose.Schema({
   body: String,
   imageUrl: String,
-  userId: { type: ObjectId, ref: 'User' },
-  chatId: { type: ObjectId, ref: 'Chat' },
+  userId: { type: ObjectId, ref: 'User', required: true },
+  chatId: { type: ObjectId, ref: 'Chat', required: true },
   createdAt: { type: Date, default: Date.now }
 });
 

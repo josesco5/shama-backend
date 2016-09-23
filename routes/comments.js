@@ -6,7 +6,7 @@ var Comment = require('../models/comment');
 router.get('/', function(req, res, next) {
   Comment.find(function(err, comments) {
     if (err) {
-      res.send(err);
+      next(err);
     }
     res.json(comments);
   });
@@ -16,7 +16,8 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
   Comment.create(req.body, function(err, comment) {
     if (err) {
-      res.send(err);
+      err.status = 400;
+      next(err);
     }
     res.json(comment);
   });
@@ -32,13 +33,16 @@ router.put('/:id', function(req, res, next) {
   var newValues = req.body;
   Comment.findById(id, function (err, comment) {
     if (err) {
-      res.send(err);
+      err.status = 404;
+      next(err);
+      return;
     }
     comment.body = newValues.body;
     comment.imageUrl = newValues.imageUrl;
     comment.save(function (err, comment) {
       if (err) {
-        res.send(err);
+        err.status = 400;
+        next(err);
       }
       res.json(comment);
     });
@@ -49,7 +53,8 @@ router.put('/:id', function(req, res, next) {
 router.delete('/:id', function(req, res, next) {
   Comment.remove({ _id: req.params.id }, function (err) {
     if (err) {
-      res.send(err);
+      next(err);
+      return;
     }
     res.send('comment deleted');
   });

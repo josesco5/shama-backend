@@ -6,7 +6,7 @@ var Message = require('../models/message');
 router.get('/', function(req, res, next) {
   Message.find(function(err, messages) {
     if (err) {
-      res.send(err);
+      next(err);
     }
     res.json(messages);
   });
@@ -16,7 +16,8 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
   Message.create(req.body, function(err, message) {
     if (err) {
-      res.send(err);
+      err.status = 400;
+      next(err);
     }
     res.json(message);
   });
@@ -32,14 +33,17 @@ router.put('/:id', function(req, res, next) {
   var newValues = req.body;
   Message.findById(id, function (err, message) {
     if (err) {
-      res.send(err);
+      err.status = 404;
+      next(err);
+      return;
     }
     message.body = newValues.body;
     message.imageUrl = newValues.imageUrl;
     message.visible = newValues.visible;
     message.save(function (err, message) {
       if (err) {
-        res.send(err);
+        err.status = 400;
+        next(err);
       }
       res.json(message);
     });
@@ -50,7 +54,8 @@ router.put('/:id', function(req, res, next) {
 router.delete('/:id', function(req, res, next) {
   Message.remove({ _id: req.params.id }, function (err) {
     if (err) {
-      res.send(err);
+      next(err);
+      return;
     }
     res.send('message deleted');
   });
