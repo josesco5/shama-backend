@@ -6,17 +6,21 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
+var auth = require('./routes/auth');
 var users = require('./routes/users');
 var chats = require('./routes/chats');
 var messages = require('./routes/messages');
 var comments = require('./routes/comments');
+
+var config = require('./config/config');
+var authentication = require('./config/auth')();
 
 var mongoose = require('mongoose');
 
 var app = express();
 
 // connect to database
-mongoose.connect('mongodb://localhost/shama');
+mongoose.connect(config.database);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,7 +34,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// use the passport package
+app.use(authentication.initialize());
+
+
 app.use('/', routes);
+app.use('/auth', auth);
 app.use('/users', users);
 app.use('/chats', chats);
 app.use('/messages', messages);
