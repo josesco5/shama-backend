@@ -3,9 +3,10 @@ var router = express.Router();
 var Chat = require('../models/chat');
 var Message = require('../models/message');
 var Comment = require('../models/comment');
+var auth = require('../config/auth')();
 
 /* GET chats listing. */
-router.get('/', function(req, res, next) {
+router.get('/', auth.authenticate(), function(req, res, next) {
   Chat.find(function(err, chats) {
     if (err) {
       next(err);
@@ -15,7 +16,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET chat detail */
-router.get('/:id', function(req, res, next) {
+router.get('/:id', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
   Chat.findById(id, function (err, chat) {
     if (err) {
@@ -27,7 +28,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 /* POST creating chat */
-router.post('/', function(req, res, next) {
+router.post('/', auth.authenticate(), function(req, res, next) {
   Chat.create(req.body, function(err, chat) {
     if (err) {
       err.status = 400;
@@ -43,7 +44,7 @@ router.post('/', function(req, res, next) {
  *   Overwrites user fields even if the new values are empty.
  *   This function must be used only by admin, supervisors and experts
  */
-router.put('/:id', function(req, res, next) {
+router.put('/:id', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
   var newValues = req.body;
   Chat.findById(id, function (err, chat) {
@@ -68,7 +69,7 @@ router.put('/:id', function(req, res, next) {
 });
 
 /* DELETE removing user */
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id', auth.authenticate(), function(req, res, next) {
   Chat.remove({ _id: req.params.id }, function (err) {
     if (err) {
       next(err);
@@ -79,7 +80,7 @@ router.delete('/:id', function(req, res, next) {
 });
 
 /* GET chat's messages */
-router.get('/:id/messages', function(req, res, next) {
+router.get('/:id/messages', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
   Message.find({ chatId: id }, function(err, messages) {
     if (err) {
@@ -91,7 +92,7 @@ router.get('/:id/messages', function(req, res, next) {
 });
 
 /* GET chat's comments */
-router.get('/:id/comments', function(req, res, next) {
+router.get('/:id/comments', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
   Comment.find({ chatId: id }, function(err, comments) {
     if (err) {
@@ -109,7 +110,7 @@ router.get('/:id/comments', function(req, res, next) {
  * Notes:
  *   It suposes that there is one question in the survey
  */
-router.post('/:id/vote/:optionId', function(req, res, next) {
+router.post('/:id/vote/:optionId', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
   var selectedOptionId = req.params.optionId;
   var newValues = req.body;
