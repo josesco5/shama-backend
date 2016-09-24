@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var Message = require('../models/message');
+var auth = require('../config/auth')();
 
 /* GET messages listing. */
-router.get('/', function(req, res, next) {
+router.get('/', auth.authenticate(), function(req, res, next) {
   Message.find(function(err, messages) {
     if (err) {
       next(err);
@@ -13,7 +14,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* POST creating message */
-router.post('/', function(req, res, next) {
+router.post('/', auth.authenticate(), function(req, res, next) {
   Message.create(req.body, function(err, message) {
     if (err) {
       err.status = 400;
@@ -28,7 +29,7 @@ router.post('/', function(req, res, next) {
  * Notes:
  *   Overwrites user fields even if the new values are empty.
  */
-router.put('/:id', function(req, res, next) {
+router.put('/:id', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
   var newValues = req.body;
   Message.findById(id, function (err, message) {
@@ -51,7 +52,7 @@ router.put('/:id', function(req, res, next) {
 });
 
 /* DELETE removing message */
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id', auth.authenticate(), function(req, res, next) {
   Message.remove({ _id: req.params.id }, function (err) {
     if (err) {
       next(err);

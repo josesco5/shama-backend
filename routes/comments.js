@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var Comment = require('../models/comment');
+var auth = require('../config/auth')();
 
 /* GET comments listing. */
-router.get('/', function(req, res, next) {
+router.get('/', auth.authenticate(), function(req, res, next) {
   Comment.find(function(err, comments) {
     if (err) {
       next(err);
@@ -13,7 +14,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* POST creating comment */
-router.post('/', function(req, res, next) {
+router.post('/', auth.authenticate(), function(req, res, next) {
   Comment.create(req.body, function(err, comment) {
     if (err) {
       err.status = 400;
@@ -28,7 +29,7 @@ router.post('/', function(req, res, next) {
  * Notes:
  *   Overwrites user fields even if the new values are empty.
  */
-router.put('/:id', function(req, res, next) {
+router.put('/:id', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
   var newValues = req.body;
   Comment.findById(id, function (err, comment) {
@@ -50,7 +51,7 @@ router.put('/:id', function(req, res, next) {
 });
 
 /* DELETE removing comment */
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id', auth.authenticate(), function(req, res, next) {
   Comment.remove({ _id: req.params.id }, function (err) {
     if (err) {
       next(err);
