@@ -2,9 +2,10 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 var Chat = require('../models/chat');
+var auth = require('../config/auth')();
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', auth.authenticate(), function(req, res, next) {
   User.find(function(err, users) {
     if (err) {
       next(err);
@@ -14,7 +15,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET user detail */
-router.get('/:id', function(req, res, next) {
+router.get('/:id', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
   User.findById(id, function (err, user) {
     if (err) {
@@ -26,7 +27,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 /* POST creating user */
-router.post('/', function(req, res, next) {
+router.post('/', auth.authenticate(), function(req, res, next) {
   User.create(req.body, function(err, user) {
     if (err) {
       err.status = 400;
@@ -42,7 +43,7 @@ router.post('/', function(req, res, next) {
  *   Overwrites user fields even if the new values are empty.
  *   This function must be used only by admin
  */
-router.put('/:id', function(req, res, next) {
+router.put('/:id', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
   var newValues = req.body;
   User.findById(id, function (err, user) {
@@ -72,7 +73,7 @@ router.put('/:id', function(req, res, next) {
 });
 
 /* DELETE removing user */
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id', auth.authenticate(), function(req, res, next) {
   User.remove({ _id: req.params.id }, function (err) {
     if (err) {
       next(err);
@@ -83,7 +84,7 @@ router.delete('/:id', function(req, res, next) {
 });
 
 /* GET user detail */
-router.get('/:id/chats', function(req, res, next) {
+router.get('/:id/chats', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
   Chat.find({ assignedTo: id }, function(err, chats) {
     if (err) {
