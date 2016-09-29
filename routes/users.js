@@ -1,8 +1,11 @@
 var express = require('express');
+var jwt = require('jwt-simple');
+var config = require('../config/config');
+var auth = require('../config/auth')();
 var router = express.Router();
 var User = require('../models/user');
 var Chat = require('../models/chat');
-var auth = require('../config/auth')();
+
 
 /* GET users listing. */
 router.get('/', auth.authenticate(), function(req, res, next) {
@@ -11,6 +14,20 @@ router.get('/', auth.authenticate(), function(req, res, next) {
       next(err);
     }
     res.json(users);
+  });
+});
+
+/* GET current user */
+router.get('/me', auth.authenticate(), function(req, res, next) {
+  var token = req.headers.authorization.split(' ')[1];
+  var decoded = jwt.decode(token, config.jwtSecret);
+  var id = decoded.id;
+  User.findById(id, function (err, user) {
+    if (err) {
+      err.status = 404;
+      next(err);
+    }
+    res.json(user);
   });
 });
 
