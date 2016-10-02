@@ -7,9 +7,42 @@ var User = require('../models/user');
 var Chat = require('../models/chat');
 
 
-/* GET users listing. */
+/*
+ * GET users listing. Used to get the team or adolescent list
+ * URL Params:
+ *   role: User's role who makes the request
+ *   type: Users' type to be queried (adolescent or team)
+ * ToDo:
+ *   Get user's role from the token
+ */
 router.get('/', auth.authenticate(), function(req, res, next) {
-  User.find(function(err, users) {
+  var role = req.query.role;
+  var type = req.query.type;
+  var params = {};
+  if (type === 'adolescent') {
+    if (role === 'admin') {
+      params = {
+        role: 'adolescent'
+      };
+    } else {
+      res.sendStatus(401);
+      return;
+    }
+  } else if (type === 'team') {
+    if (role === 'admin') {
+      params = {
+        role: { $in: ['supervisor', 'expert'] }
+      };
+    } else if (role === 'supervisor') {
+      params = {
+        role: 'expert'
+      };
+    } else {
+      res.sendStatus(401);
+      return;
+    }
+  }
+  User.find(params, function(err, users) {
     if (err) {
       next(err);
     }
