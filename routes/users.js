@@ -122,6 +122,31 @@ router.put('/:id', auth.authenticate(), function(req, res, next) {
   });
 });
 
+/*
+ * POST enable/disable user
+ * Notes:
+ *   This function must be used only by admin or supervisor
+ */
+router.post('/:id/enable', auth.authenticate(), function(req, res, next) {
+  var id = req.params.id;
+  var enabled = req.body.enabled;
+  User.findById(id, function (err, user) {
+    if (err) {
+      err.status = 404;
+      next(err);
+      return;
+    }
+    user.enabled = enabled;
+    user.save(function (err, user) {
+      if (err) {
+        err.status = 400;
+        next(err);
+      }
+      res.json(user);
+    });
+  });
+});
+
 /* DELETE removing user */
 router.delete('/:id', auth.authenticate(), function(req, res, next) {
   User.remove({ _id: req.params.id }, function (err) {
