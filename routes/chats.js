@@ -14,12 +14,14 @@ router.get('/', auth.authenticate(), function(req, res, next) {
     params.type = type;
   }
 
-  Chat.find(params, function(err, chats) {
-    if (err) {
-      next(err);
-    }
-    res.json(chats);
-  });
+  Chat.find(params)
+    .populate('assignedTo')
+    .exec(function(err, chats) {
+      if (err) {
+        next(err);
+      }
+      res.json(chats);
+    });
 });
 
 /* GET chat detail */
