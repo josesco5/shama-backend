@@ -7,7 +7,14 @@ var auth = require('../config/auth')();
 
 /* GET chats listing. */
 router.get('/', auth.authenticate(), function(req, res, next) {
-  Chat.find(function(err, chats) {
+  var type = req.query.type;
+  var params = {};
+
+  if (type) {
+    params.type = type;
+  }
+
+  Chat.find(params, function(err, chats) {
     if (err) {
       next(err);
     }
