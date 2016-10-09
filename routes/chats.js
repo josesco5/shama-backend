@@ -77,6 +77,31 @@ router.put('/:id', auth.authenticate(), function(req, res, next) {
   });
 });
 
+/*
+ * POST enable/disable chat
+ * Notes:
+ *   This function must be used only by admin or supervisor
+ */
+router.post('/:id/enable', auth.authenticate(), function(req, res, next) {
+  var id = req.params.id;
+  var enabled = req.body.enabled;
+  Chat.findById(id, function (err, chat) {
+    if (err) {
+      err.status = 404;
+      next(err);
+      return;
+    }
+    chat.enabled = enabled;
+    chat.save(function (err, chat) {
+      if (err) {
+        err.status = 400;
+        next(err);
+      }
+      res.json(chat);
+    });
+  });
+});
+
 /* DELETE removing user */
 router.delete('/:id', auth.authenticate(), function(req, res, next) {
   Chat.remove({ _id: req.params.id }, function (err) {
