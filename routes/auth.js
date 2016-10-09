@@ -4,8 +4,8 @@ var jwt = require('jwt-simple');
 var config = require('../config/config');
 var User = require('../models/user');
 
-/* POST sign up */
-router.post('/sign-up', function(req, res, next) {
+/* POST sign in */
+router.post('/sign-in', function(req, res, next) {
   var params = {
     email: req.body.email,
     password: req.body.password
