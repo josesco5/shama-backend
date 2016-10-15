@@ -27,13 +27,15 @@ router.get('/', auth.authenticate(), function(req, res, next) {
 /* GET chat detail */
 router.get('/:id', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
-  Chat.findById(id, function (err, chat) {
-    if (err) {
-      err.status = 404;
-      next(err);
-    }
-    res.json(chat);
-  });
+  Chat.findById(id)
+    .populate('assignedTo')
+    .exec(function (err, chat) {
+      if (err) {
+        err.status = 404;
+        next(err);
+      }
+      res.json(chat);
+    });
 });
 
 /* POST creating chat */
