@@ -118,25 +118,29 @@ router.delete('/:id', auth.authenticate(), function(req, res, next) {
 /* GET chat's messages */
 router.get('/:id/messages', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
-  Message.find({ chatId: id }, function(err, messages) {
-    if (err) {
-      next(err);
-      return;
-    }
-    res.json(messages);
-  });
+  Message.find({ chatId: id })
+    .populate('userId')
+    .exec(function(err, messages) {
+      if (err) {
+        next(err);
+        return;
+      }
+      res.json(messages);
+    });
 });
 
 /* GET chat's comments */
 router.get('/:id/comments', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
-  Comment.find({ chatId: id }, function(err, comments) {
-    if (err) {
-      next(err);
-      return;
-    }
-    res.json(comments);
-  });
+  Comment.find({ chatId: id })
+    .populate('userId')
+    .exec(function(err, comments) {
+      if (err) {
+        next(err);
+        return;
+      }
+      res.json(comments);
+    });
 });
 
 /*** Surveys ***/
