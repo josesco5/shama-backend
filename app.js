@@ -19,6 +19,11 @@ var authentication = require('./config/auth')();
 var mongoose = require('mongoose');
 
 var app = express();
+var server = require('http').Server(app);
+
+// sockets setup
+var io = require('socket.io')(server);
+var socket = require('./config/socket')(io);
 
 // connect to database
 mongoose.connect(config.database);
@@ -73,4 +78,4 @@ app.use(function(err, req, res, next) {
 });
 
 
-module.exports = app;
+module.exports = { app: app, server: server };
