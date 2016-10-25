@@ -25,4 +25,28 @@ router.post('/sign-in', function(req, res, next) {
   });
 });
 
+/* POST sign up */
+router.post('/sign-up', function(req, res, next) {
+  var params = {
+    email: req.body.email
+  };
+  User.findOne(params, function(err, user) {
+    if (err) {
+      next(err);
+      return;
+    }
+    if (user) {
+      var payload = { id: user._id };
+      var token = jwt.encode(payload, config.jwtSecret);
+      res.json({ token: token, user: user });
+    } else {
+      User.create(req.body, function (err, user) {
+        var payload = { id: user._id };
+        var token = jwt.encode(payload, config.jwtSecret);
+        res.json({ token: token, user: user });
+      });
+    }
+  });
+});
+
 module.exports = router;
