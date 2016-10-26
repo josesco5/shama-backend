@@ -8,9 +8,12 @@ var auth = require('../config/auth')();
 /* GET chats listing. */
 router.get('/', auth.authenticate(), function(req, res, next) {
   var type = req.query.type;
+  var mobile = req.query.mobile;
   var params = {};
 
-  if (type) {
+  if (mobile) {
+    params.type = { $in: ['public', 'survey'] };
+  } else if (type) {
     params.type = type;
   }
 
