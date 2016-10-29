@@ -149,7 +149,6 @@ router.get('/:id/participants', auth.authenticate(), function(req, res, next) {
 router.get('/:id/messages', auth.authenticate(), function(req, res, next) {
   var id = req.params.id;
   Message.find({ chatId: id })
-    .populate('userId')
     .exec(function(err, messages) {
       if (err) {
         next(err);
