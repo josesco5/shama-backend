@@ -3,6 +3,7 @@ var router = express.Router();
 var Chat = require('../models/chat');
 var Message = require('../models/message');
 var Comment = require('../models/comment');
+var User = require('../models/user');
 var auth = require('../config/auth')();
 
 /* GET chats listing. */
@@ -115,6 +116,32 @@ router.delete('/:id', auth.authenticate(), function(req, res, next) {
       return;
     }
     res.send('chat deleted');
+  });
+});
+
+/*
+ * GET chat's participants
+ * Notes:
+ *   This function must be used only by admin
+ */
+router.get('/:id/participants', auth.authenticate(), function(req, res, next) {
+  var id = req.params.id;
+  Message.distinct('userId', { chatId: id }, function(err, participants) {
+    if (err) {
+      next(err);
+      return;
+    }
+
+    var params = {
+      _id: { $in: participants }
+    };
+
+    User.find(params, function(err, users) {
+      if (err) {
+        next(err);
+      }
+      res.json(users);
+    });
   });
 });
 
